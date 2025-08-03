@@ -1,6 +1,6 @@
 {
   "name": "file-organizer-electron",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "description": "A desktop file organizer with HTML/CSS UI and Python backend.",
   "main": "main.js",
   "scripts": {

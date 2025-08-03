@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.electronAPI.onOrganizeStatus((data) => {
         currentFileLabel.textContent = data.message;
-        progressBar.style.width = '0%'; 
+        progressBar.style.width = '0%';
         progressSizeLabel.textContent = `0 B / 0 B`;
     });
 
@@ -220,14 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Update Button Logic ---
-    const updateBtn = document.getElementById('format-btn'); // دکمه به‌روزرسانی
-
+    const updateBtn = document.getElementById('update-btn');
     if (updateBtn) {
         updateBtn.addEventListener('click', async () => {
-            // یک alert برای اطلاع به کاربر که فرآیند شروع شده است
             alert('Checking for updates...');
-
-            // فراخوانی تابع از preload برای برقراری ارتباط با main
             try {
                 await window.electronAPI.checkForUpdates();
             } catch (error) {

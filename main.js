@@ -1,8 +1,8 @@
-// main.js - Updated with window control handlers
+// main.js
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
-const { autoUpdater } = require('electron-updater'); // <-- این خط را اضافه کنید
+const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
 let pythonProcess = null;
@@ -19,7 +19,7 @@ autoUpdater.on('update-available', (info) => {
         message: `A new version ${info.version} is available. Do you want to download it now?`,
         buttons: ['Yes', 'No']
     }).then(result => {
-        if (result.response === 0) { // 'Yes' button clicked
+        if (result.response === 0) {
             autoUpdater.downloadUpdate();
         }
     });
@@ -31,8 +31,7 @@ autoUpdater.on('update-downloaded', (info) => {
         title: 'Update Ready',
         message: 'The update is ready to be installed. The application will restart to install it.',
         buttons: ['OK']
-    }).then(result => {
-        // No need to check result, just quit and install
+    }).then(() => {
         autoUpdater.quitAndInstall();
     });
 });
@@ -40,7 +39,7 @@ autoUpdater.on('update-downloaded', (info) => {
 const createWindow = () => {
     mainWindow = new BrowserWindow({
         width: 600,
-        height: 383,
+        height: 370,
         frame: false,
         resizable: false,
         titleBarStyle: 'hiddenInset',
@@ -57,19 +56,16 @@ const createWindow = () => {
 app.whenReady().then(() => {
     createWindow();
 
-    // Mac specific: If the app is activated and no windows are open, create one.
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
         }
     });
-    
-    // Check for updates after the app is ready and window is created
-    autoUpdater.checkForUpdatesAndNotify(); // <-- این خط را اضافه کنید
+
+    autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => {
-    // Quit app unless it's on macOS
     if (process.platform !== 'darwin') {
         app.quit();
     }
@@ -97,8 +93,16 @@ ipcMain.on('close', () => {
 // --- IPC Handler for Manual Update Check ---
 ipcMain.handle('check-for-updates', async () => {
     autoUpdater.checkForUpdatesAndNotify();
-    return { status: "checking" }; // You can return a status if needed
-  });
+    return { status: "checking" };
+});
+
+// --- IPC Handlers for File Dialogs and Python Interaction ---
+ipcMain.handle('open-directory-dialog', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory']
+    });
+    return (!canceled && filePaths.length > 0) ? filePaths[0] : null;
+});
 
 ipcMain.handle('organize-files', (event, sourceDir, destinationDir) => {
     return new Promise((resolve, reject) => {
