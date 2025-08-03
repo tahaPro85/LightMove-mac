@@ -219,6 +219,24 @@ document.addEventListener('DOMContentLoaded', () => {
         currentFileLabel.textContent = 'Deletion failed.';
     });
 
+    // --- Update Button Logic ---
+    const updateBtn = document.getElementById('format-btn'); // دکمه به‌روزرسانی
+
+    if (updateBtn) {
+        updateBtn.addEventListener('click', async () => {
+            // یک alert برای اطلاع به کاربر که فرآیند شروع شده است
+            alert('Checking for updates...');
+
+            // فراخوانی تابع از preload برای برقراری ارتباط با main
+            try {
+                await window.electronAPI.checkForUpdates();
+            } catch (error) {
+                alert('An error occurred while checking for updates.');
+                console.error('Update check failed:', error);
+            }
+        });
+    }
+
     function formatSize(bytes) {
         if (bytes === 0) return '0 B';
         const k = 1024;

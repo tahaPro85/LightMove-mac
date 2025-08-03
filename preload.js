@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     minimizeWindow: () => ipcRenderer.send('minimize'),
     maximizeRestoreWindow: () => ipcRenderer.send('maximize'),
     closeWindow: () => ipcRenderer.send('close'),
+    checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
 
     // File dialogs
     openDirectoryDialog: () => ipcRenderer.invoke('open-directory-dialog'),

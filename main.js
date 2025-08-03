@@ -2,10 +2,40 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
+const { autoUpdater } = require('electron-updater'); // <-- این خط را اضافه کنید
 
 let mainWindow;
 let pythonProcess = null;
 let currentProcessedFiles = null;
+
+// --- Auto-updater setup ---
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
+autoUpdater.on('update-available', (info) => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Available',
+        message: `A new version ${info.version} is available. Do you want to download it now?`,
+        buttons: ['Yes', 'No']
+    }).then(result => {
+        if (result.response === 0) { // 'Yes' button clicked
+            autoUpdater.downloadUpdate();
+        }
+    });
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Ready',
+        message: 'The update is ready to be installed. The application will restart to install it.',
+        buttons: ['OK']
+    }).then(result => {
+        // No need to check result, just quit and install
+        autoUpdater.quitAndInstall();
+    });
+});
 
 const createWindow = () => {
     mainWindow = new BrowserWindow({
@@ -33,6 +63,9 @@ app.whenReady().then(() => {
             createWindow();
         }
     });
+    
+    // Check for updates after the app is ready and window is created
+    autoUpdater.checkForUpdatesAndNotify(); // <-- این خط را اضافه کنید
 });
 
 app.on('window-all-closed', () => {
@@ -61,13 +94,11 @@ ipcMain.on('close', () => {
     if (mainWindow) mainWindow.close();
 });
 
-// --- IPC Handlers for File Dialogs and Python Interaction ---
-ipcMain.handle('open-directory-dialog', async () => {
-    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-        properties: ['openDirectory']
-    });
-    return (!canceled && filePaths.length > 0) ? filePaths[0] : null;
-});
+// --- IPC Handler for Manual Update Check ---
+ipcMain.handle('check-for-updates', async () => {
+    autoUpdater.checkForUpdatesAndNotify();
+    return { status: "checking" }; // You can return a status if needed
+  });
 
 ipcMain.handle('organize-files', (event, sourceDir, destinationDir) => {
     return new Promise((resolve, reject) => {
