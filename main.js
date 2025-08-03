@@ -40,7 +40,7 @@ autoUpdater.on('update-downloaded', (info) => {
 const createWindow = () => {
     mainWindow = new BrowserWindow({
         width: 600,
-        height: 370,
+        height: 383,
         frame: false,
         resizable: false,
         titleBarStyle: 'hiddenInset',
