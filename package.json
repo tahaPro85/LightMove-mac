@@ -1,6 +1,6 @@
 {
   "name": "file-organizer-electron",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "A desktop file organizer with HTML/CSS UI and Python backend.",
   "main": "main.js",
   "scripts": {
@@ -20,8 +20,8 @@
     "electron-updater": "^6.1.1"
   },
   "build": {
-    "appId": "com.yourname.fileorganizer",
-    "productName": "File Organizer",
+    "appId": "com.tahapro.lightmove",
+    "productName": "LightMove",
     "directories": {
       "output": "dist"
     },
@@ -31,11 +31,13 @@
       "node_modules/**/*",
       "backend/**/*"
     ],
+    "asar": false,
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns"
+    },
     "win": {
       "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg"
     },
     "publish": {
       "provider": "github",
